@@ -1,20 +1,15 @@
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
-import { CatsController } from './cats/cats.controller';
-import { CatsModule } from './cats/cats.module';
-import { logger } from './common/middleware/logger.middleware';
+import { MongooseModule } from '@nestjs/mongoose';
+import { UsersModule } from './users/users.module';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 @Module({
-  imports: [CatsModule],
+  imports: [
+    MongooseModule.forRoot(process.env.MONGODB_URL), 
+    UsersModule
+  ],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-      consumer
-        .apply(logger)
-        .exclude(
-          { path: 'cats', method: RequestMethod.PUT },
-          { path: 'cats', method: RequestMethod.POST },
-          'cats/(.*)',
-        )
-        .forRoutes(CatsController);
-  }
+export class AppModule {
 }
